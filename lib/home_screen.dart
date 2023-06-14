@@ -5,6 +5,8 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 
 class HomeScreen extends StatefulWidget {
+  const HomeScreen({super.key});
+
   @override
   _HomeScreenState createState() => _HomeScreenState();
 }
@@ -15,7 +17,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   int currentPage = 1;
   final int pageSize = 20;
-  final int totalMovies = 40;
+  final int totalMovies = 10000;
 
   @override
   void initState() {
@@ -28,7 +30,7 @@ class _HomeScreenState extends State<HomeScreen> {
       isLoading = true;
     });
 
-    final apiKey = '2fe3e094d05ea48ef1cd132381a4708b';
+    const apiKey = '2fe3e094d05ea48ef1cd132381a4708b';
 
     // Calculate the total number of pages required based on the total movies and page size
     final int totalPages = (totalMovies / pageSize).ceil();
@@ -45,16 +47,16 @@ class _HomeScreenState extends State<HomeScreen> {
 
       try {
         final response = await http.get(url);
-        print('Page: $page, Response status: ${response.statusCode}');
-        print('Page: $page, Response body: ${response.body}');
+        print('Response status: ${response.statusCode}');
+        print('Response body: ${response.body}');
 
         if (response.statusCode == 200) {
           final jsonData = jsonDecode(response.body);
           final movieListResponse = MovieListResponse.fromJson(jsonData);
           allMovies.addAll(movieListResponse.results!);
 
-          // Fetch the genre names for each movie
-          await fetchGenresForMovies(allMovies);
+          // // Fetch the genre names for each movie
+          // await fetchGenresForMovies(allMovies);
 
           // Update the current page to the next page
           currentPage = page;
@@ -77,37 +79,37 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
-  Future<void> fetchGenresForMovies(List<Movie> movies) async {
-    final apiKey = '2fe3e094d05ea48ef1cd132381a4708b';
-    for (var movie in movies) {
-      final genreUrl = Uri.https(
-        'api.themoviedb.org',
-        '/3/movie/${movie.id}',
-        {'api_key': apiKey},
-      );
+  // Future<void> fetchGenresForMovies(List<Movie> movies) async {
+  //   const apiKey = '2fe3e094d05ea48ef1cd132381a4708b';
+  //   for (var movie in movies) {
+  //     final genreUrl = Uri.https(
+  //       'api.themoviedb.org',
+  //       '/3/movie/${movie.id}',
+  //       {'api_key': apiKey},
+  //     );
 
-      try {
-        final genreResponse = await http.get(genreUrl);
-        print('Genre Response status: ${genreResponse.statusCode}');
-        print('Genre Response body: ${genreResponse.body}');
+  //     try {
+  //       final genreResponse = await http.get(genreUrl);
+  //       print('Genre Response status: ${genreResponse.statusCode}');
+  //       print('Genre Response body: ${genreResponse.body}');
 
-        if (genreResponse.statusCode == 200) {
-          final genreData = jsonDecode(genreResponse.body);
-          final genreIds = genreData['genres'];
+  //       if (genreResponse.statusCode == 200) {
+  //         final genreData = jsonDecode(genreResponse.body);
+  //         final genreIds = genreData['genres'];
 
-          if (genreIds != null) {
-            movie.genres = genreIds
-                .map<String>((genre) => genre['name'].toString())
-                .toList();
-          }
-        } else {
-          print('Error: ${genreResponse.statusCode}');
-        }
-      } catch (e) {
-        print('Error: $e');
-      }
-    }
-  }
+  //         if (genreIds != null) {
+  //           movie.genres = genreIds
+  //               .map<String>((genre) => genre['name'].toString())
+  //               .toList();
+  //         }
+  //       } else {
+  //         print('Error: ${genreResponse.statusCode}');
+  //       }
+  //     } catch (e) {
+  //       print('Error: $e');
+  //     }
+  //   }
+  // }
 
   double titleFontSize = 20.0;
   double descFontSize = 14.0;
@@ -182,14 +184,14 @@ class _HomeScreenState extends State<HomeScreen> {
         ],
       ),
       body: isLoading
-          ? Center(
+          ? const Center(
               child: CircularProgressIndicator(),
             )
           : movies != null && movies!.isNotEmpty
               ? ListView.separated(
                   itemCount: movies!.length,
                   separatorBuilder: (BuildContext context, int index) =>
-                      Divider(
+                      const Divider(
                     color: Colors.grey,
                   ),
                   itemBuilder: (context, index) {
@@ -230,12 +232,12 @@ class _HomeScreenState extends State<HomeScreen> {
                                           fontWeight: FontWeight.bold),
                                     ),
                                     const SizedBox(height: 15),
-                                    Text(
-                                      movie.genres != null
-                                          ? movie.genres!.join(", ")
-                                          : '',
-                                      style: TextStyle(fontSize: descFontSize),
-                                    ),
+                                    // Text(
+                                    //   movie.genres != null
+                                    //       ? movie.genres!.join(", ")
+                                    //       : '',
+                                    //   style: TextStyle(fontSize: descFontSize),
+                                    // ),
                                   ],
                                 ),
                               ),
@@ -246,7 +248,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     );
                   },
                 )
-              : Center(
+              : const Center(
                   child: Text('No movies found.'),
                 ),
     );

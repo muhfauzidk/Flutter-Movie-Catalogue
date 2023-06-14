@@ -5,7 +5,7 @@ import 'data.dart';
 class MovieDetailScreen extends StatefulWidget {
   final Movie movie;
 
-  MovieDetailScreen({required this.movie});
+  const MovieDetailScreen({required this.movie});
 
   @override
   _MovieDetailScreenState createState() => _MovieDetailScreenState();
@@ -91,7 +91,7 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Container(
-              margin: EdgeInsets.all(16.0),
+              margin: const EdgeInsets.all(16.0),
               alignment: Alignment.center, // Center the image
               child: GestureDetector(
                 onTap: () {
@@ -124,12 +124,12 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  SizedBox(height: 8),
+                  const SizedBox(height: 8),
                   Text(
                     widget.movie.overview!,
                     style: TextStyle(fontSize: descFontSize),
                   ),
-                  SizedBox(height: 16),
+                  const SizedBox(height: 16),
                   Text(
                     'Release Date',
                     style: TextStyle(
@@ -137,12 +137,12 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  SizedBox(height: 8),
+                  const SizedBox(height: 8),
                   Text(
                     widget.movie.releaseDate!,
                     style: TextStyle(fontSize: descFontSize),
                   ),
-                  SizedBox(height: 16),
+                  const SizedBox(height: 16),
                   Text(
                     'Genres',
                     style: TextStyle(
@@ -150,14 +150,14 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  SizedBox(height: 8),
+                  const SizedBox(height: 8),
                   Text(
                     widget.movie.genres != null
                         ? widget.movie.genres!.join(", ")
                         : '',
                     style: TextStyle(fontSize: descFontSize),
                   ),
-                  SizedBox(height: 16),
+                  const SizedBox(height: 16),
                   Text(
                     'Vote Average',
                     style: TextStyle(
@@ -165,12 +165,9 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  SizedBox(height: 8),
+                  const SizedBox(height: 8),
                   Text(
-                    widget.movie.voteAverage.toString() +
-                        ' (' +
-                        widget.movie.voteCount.toString() +
-                        ' user)',
+                    '${widget.movie.voteAverage} (${widget.movie.voteCount} user)',
                     style: TextStyle(fontSize: descFontSize),
                   ),
                 ],
