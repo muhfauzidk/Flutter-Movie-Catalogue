@@ -17,7 +17,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   int currentPage = 1;
   final int pageSize = 20;
-  final int totalMovies = 10000;
+  final int totalMovies = 100;
 
   @override
   void initState() {
@@ -140,6 +140,26 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
+  String searchQuery = '';
+
+  void searchMovies(String query) {
+    setState(() {
+      searchQuery = query;
+    });
+  }
+
+  List<Movie> getFilteredMovies() {
+    if (searchQuery.isEmpty) {
+      return movies ?? [];
+    } else {
+      return (movies ?? []).where((movie) {
+        final lowerCaseTitle = movie.title?.toLowerCase() ?? '';
+        final lowerCaseQuery = searchQuery.toLowerCase();
+        return lowerCaseTitle.contains(lowerCaseQuery);
+      }).toList();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -148,6 +168,18 @@ class _HomeScreenState extends State<HomeScreen> {
         title: const Text("Movie Catalogue"),
         centerTitle: true,
         actions: [
+          IconButton(
+            icon: const Icon(Icons.search),
+            onPressed: () async {
+              final String? query = await showSearch<String?>(
+                context: context,
+                delegate: MovieSearchDelegate(movies: movies),
+              );
+              if (query != null) {
+                searchMovies(query);
+              }
+            },
+          ),
           PopupMenuButton<int>(
             itemBuilder: (context) {
               return [
@@ -251,6 +283,92 @@ class _HomeScreenState extends State<HomeScreen> {
               : const Center(
                   child: Text('No movies found.'),
                 ),
+    );
+  }
+}
+
+class MovieSearchDelegate extends SearchDelegate<String?> {
+  final List<Movie>? movies; // Pass the list of movies to the delegate
+
+  MovieSearchDelegate({this.movies});
+
+  @override
+  List<Widget> buildActions(BuildContext context) {
+    return [
+      IconButton(
+        icon: const Icon(Icons.clear),
+        onPressed: () {
+          query = '';
+        },
+      ),
+    ];
+  }
+
+  @override
+  Widget buildLeading(BuildContext context) {
+    return IconButton(
+      icon: const Icon(Icons.arrow_back),
+      onPressed: () {
+        close(context, null);
+      },
+    );
+  }
+
+  @override
+  Widget buildResults(BuildContext context) {
+    final List<Movie> searchResults = query.isEmpty
+        ? []
+        : movies!
+            .where((movie) =>
+                movie.title!.toLowerCase().contains(query.toLowerCase()))
+            .toList();
+
+    return ListView.separated(
+      itemCount: searchResults.length,
+      separatorBuilder: (BuildContext context, int index) => Divider(),
+      itemBuilder: (BuildContext context, int index) {
+        final Movie movie = searchResults[index];
+        return GestureDetector(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => MovieDetailScreen(movie: movie),
+              ),
+            );
+          },
+          child: ListTile(
+            title: Text(movie.title!),
+          ),
+        );
+      },
+    );
+  }
+
+  @override
+  Widget buildSuggestions(BuildContext context) {
+    final suggestionList = movies?.where((movie) {
+      final lowerCaseTitle = movie.title?.toLowerCase() ?? '';
+      final lowerCaseQuery = query.toLowerCase();
+      return lowerCaseTitle.contains(lowerCaseQuery);
+    }).toList();
+
+    return ListView.builder(
+      itemCount: suggestionList?.length ?? 0,
+      itemBuilder: (BuildContext context, int index) {
+        final movie = suggestionList![index];
+        return ListTile(
+          title: Text(movie.title ?? ''),
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => MovieDetailScreen(movie: movie),
+              ),
+            );
+          },
+        );
+      },
     );
   }
 }
