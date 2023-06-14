@@ -56,11 +56,11 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
               return [
                 const PopupMenuItem<int>(
                   value: 0,
-                  child: Text("Increase title font size"),
+                  child: Text("Increase font size"),
                 ),
                 const PopupMenuItem<int>(
                   value: 1,
-                  child: Text("Decrease title font size"),
+                  child: Text("Decrease font size"),
                 ),
                 const PopupMenuItem<int>(
                   value: 2,
@@ -99,8 +99,9 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
                     context,
                     MaterialPageRoute(
                       builder: (context) => ImageViewScreen(
-                          imageUrl:
-                              'https://image.tmdb.org/t/p/w500${widget.movie.posterPath}'),
+                        imageUrl:
+                            'https://image.tmdb.org/t/p/w500${widget.movie.posterPath}',
+                      ),
                     ),
                   );
                 },
@@ -181,8 +182,9 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
 }
 
 class ImageViewScreen extends StatelessWidget {
-  const ImageViewScreen({super.key, required this.imageUrl});
+  const ImageViewScreen({Key? key, required this.imageUrl}) : super(key: key);
   final String imageUrl;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

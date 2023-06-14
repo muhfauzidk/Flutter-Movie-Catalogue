@@ -1,11 +1,12 @@
-import 'package:movie_catalogue/data.dart';
-import 'package:movie_catalogue/detail_movie_screen.dart';
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:flutter/material.dart';
+
+import 'package:movie_catalogue/data.dart';
+import 'package:movie_catalogue/detail_movie_screen.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+  const HomeScreen({Key? key}) : super(key: key);
 
   @override
   _HomeScreenState createState() => _HomeScreenState();
@@ -15,7 +16,6 @@ class _HomeScreenState extends State<HomeScreen> {
   List<Movie>? movies;
   bool isLoading = false;
 
-  int currentPage = 1;
   final int pageSize = 20;
   final int totalMovies = 100;
 
@@ -55,12 +55,6 @@ class _HomeScreenState extends State<HomeScreen> {
           final movieListResponse = MovieListResponse.fromJson(jsonData);
           allMovies.addAll(movieListResponse.results!);
 
-          // // Fetch the genre names for each movie
-          // await fetchGenresForMovies(allMovies);
-
-          // Update the current page to the next page
-          currentPage = page;
-
           // Check if we have fetched the desired number of movies
           if (allMovies.length >= totalMovies) {
             break;
@@ -79,51 +73,12 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
-  // Future<void> fetchGenresForMovies(List<Movie> movies) async {
-  //   const apiKey = '2fe3e094d05ea48ef1cd132381a4708b';
-  //   for (var movie in movies) {
-  //     final genreUrl = Uri.https(
-  //       'api.themoviedb.org',
-  //       '/3/movie/${movie.id}',
-  //       {'api_key': apiKey},
-  //     );
-
-  //     try {
-  //       final genreResponse = await http.get(genreUrl);
-  //       print('Genre Response status: ${genreResponse.statusCode}');
-  //       print('Genre Response body: ${genreResponse.body}');
-
-  //       if (genreResponse.statusCode == 200) {
-  //         final genreData = jsonDecode(genreResponse.body);
-  //         final genreIds = genreData['genres'];
-
-  //         if (genreIds != null) {
-  //           movie.genres = genreIds
-  //               .map<String>((genre) => genre['name'].toString())
-  //               .toList();
-  //         }
-  //       } else {
-  //         print('Error: ${genreResponse.statusCode}');
-  //       }
-  //     } catch (e) {
-  //       print('Error: $e');
-  //     }
-  //   }
-  // }
-
   double titleFontSize = 20.0;
-  double descFontSize = 14.0;
   Color homeScreenBackgroundColor = Colors.white;
 
   void increaseTitleFontSize() {
     setState(() {
       titleFontSize += 5;
-    });
-  }
-
-  void decreaseTitleFontSize() {
-    setState(() {
-      titleFontSize -= 5;
     });
   }
 
@@ -188,10 +143,6 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: Text("Increase title font size"),
                 ),
                 const PopupMenuItem<int>(
-                  value: 1,
-                  child: Text("Decrease title font size"),
-                ),
-                const PopupMenuItem<int>(
                   value: 2,
                   child: Text("Change background color"),
                 ),
@@ -204,8 +155,6 @@ class _HomeScreenState extends State<HomeScreen> {
             onSelected: (value) {
               if (value == 0) {
                 increaseTitleFontSize();
-              } else if (value == 1) {
-                decreaseTitleFontSize();
               } else if (value == 2) {
                 changeBackgroundColor();
               } else if (value == 3) {
@@ -219,15 +168,18 @@ class _HomeScreenState extends State<HomeScreen> {
           ? const Center(
               child: CircularProgressIndicator(),
             )
-          : movies != null && movies!.isNotEmpty
-              ? ListView.separated(
-                  itemCount: movies!.length,
+          : getFilteredMovies().isEmpty
+              ? const Center(
+                  child: Text('No movies found.'),
+                )
+              : ListView.separated(
+                  itemCount: getFilteredMovies().length,
                   separatorBuilder: (BuildContext context, int index) =>
                       const Divider(
                     color: Colors.grey,
                   ),
                   itemBuilder: (context, index) {
-                    final movie = movies![index];
+                    final movie = getFilteredMovies()[index];
                     return GestureDetector(
                       onTap: () {
                         Navigator.of(context).push(
@@ -260,16 +212,11 @@ class _HomeScreenState extends State<HomeScreen> {
                                     Text(
                                       movie.title ?? '',
                                       style: TextStyle(
-                                          fontSize: titleFontSize,
-                                          fontWeight: FontWeight.bold),
+                                        fontSize: titleFontSize,
+                                        fontWeight: FontWeight.bold,
+                                      ),
                                     ),
                                     const SizedBox(height: 15),
-                                    // Text(
-                                    //   movie.genres != null
-                                    //       ? movie.genres!.join(", ")
-                                    //       : '',
-                                    //   style: TextStyle(fontSize: descFontSize),
-                                    // ),
                                   ],
                                 ),
                               ),
@@ -279,9 +226,6 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     );
                   },
-                )
-              : const Center(
-                  child: Text('No movies found.'),
                 ),
     );
   }
@@ -316,16 +260,17 @@ class MovieSearchDelegate extends SearchDelegate<String?> {
 
   @override
   Widget buildResults(BuildContext context) {
-    final List<Movie> searchResults = query.isEmpty
-        ? []
-        : movies!
-            .where((movie) =>
-                movie.title!.toLowerCase().contains(query.toLowerCase()))
-            .toList();
+    final List<Movie> searchResults = movies?.where((movie) {
+          final title = movie.title ?? '';
+          final lowerCaseTitle = title.toLowerCase();
+          final lowerCaseQuery = query.toLowerCase();
+          return lowerCaseTitle.contains(lowerCaseQuery);
+        }).toList() ??
+        [];
 
     return ListView.separated(
       itemCount: searchResults.length,
-      separatorBuilder: (BuildContext context, int index) => Divider(),
+      separatorBuilder: (BuildContext context, int index) => const Divider(),
       itemBuilder: (BuildContext context, int index) {
         final Movie movie = searchResults[index];
         return GestureDetector(
@@ -347,18 +292,20 @@ class MovieSearchDelegate extends SearchDelegate<String?> {
 
   @override
   Widget buildSuggestions(BuildContext context) {
-    final suggestionList = movies?.where((movie) {
-      final lowerCaseTitle = movie.title?.toLowerCase() ?? '';
-      final lowerCaseQuery = query.toLowerCase();
-      return lowerCaseTitle.contains(lowerCaseQuery);
-    }).toList();
+    final List<Movie> suggestions = movies?.where((movie) {
+          final title = movie.title ?? '';
+          final lowerCaseTitle = title.toLowerCase();
+          final lowerCaseQuery = query.toLowerCase();
+          return lowerCaseTitle.contains(lowerCaseQuery);
+        }).toList() ??
+        [];
 
-    return ListView.builder(
-      itemCount: suggestionList?.length ?? 0,
+    return ListView.separated(
+      itemCount: suggestions.length,
+      separatorBuilder: (BuildContext context, int index) => const Divider(),
       itemBuilder: (BuildContext context, int index) {
-        final movie = suggestionList![index];
-        return ListTile(
-          title: Text(movie.title ?? ''),
+        final Movie movie = suggestions[index];
+        return GestureDetector(
           onTap: () {
             Navigator.push(
               context,
@@ -367,6 +314,9 @@ class MovieSearchDelegate extends SearchDelegate<String?> {
               ),
             );
           },
+          child: ListTile(
+            title: Text(movie.title!),
+          ),
         );
       },
     );
