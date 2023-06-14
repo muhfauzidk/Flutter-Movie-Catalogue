@@ -2,19 +2,89 @@ import 'package:flutter/material.dart';
 
 import 'data.dart';
 
-class MovieDetailScreen extends StatelessWidget {
+class MovieDetailScreen extends StatefulWidget {
   final Movie movie;
-  double titleFontSize = 20.0;
-  double descFontSize = 16.0;
-  Color homeScreenBackgroundColor = Colors.white;
 
   MovieDetailScreen({required this.movie});
 
   @override
+  _MovieDetailScreenState createState() => _MovieDetailScreenState();
+}
+
+class _MovieDetailScreenState extends State<MovieDetailScreen> {
+  double titleFontSize = 20.0;
+  double descFontSize = 16.0;
+  Color detailScreenBackgroundColor = Colors.white;
+
+  void increaseFontSize() {
+    setState(() {
+      titleFontSize += 5;
+      descFontSize += 5;
+    });
+  }
+
+  void decreaseFontSize() {
+    setState(() {
+      titleFontSize -= 5;
+      descFontSize -= 5;
+    });
+  }
+
+  void changeBackgroundColor() {
+    setState(() {
+      detailScreenBackgroundColor = Colors.cyan;
+    });
+  }
+
+  void changeToDefault() {
+    setState(() {
+      titleFontSize = 20.0;
+      descFontSize = 16.0;
+      detailScreenBackgroundColor = Colors.white;
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: detailScreenBackgroundColor,
       appBar: AppBar(
-        title: Text(movie.title!),
+        title: Text(widget.movie.title!),
+        actions: [
+          PopupMenuButton<int>(
+            itemBuilder: (context) {
+              return [
+                const PopupMenuItem<int>(
+                  value: 0,
+                  child: Text("Increase title font size"),
+                ),
+                const PopupMenuItem<int>(
+                  value: 1,
+                  child: Text("Decrease title font size"),
+                ),
+                const PopupMenuItem<int>(
+                  value: 2,
+                  child: Text("Change background color"),
+                ),
+                const PopupMenuItem<int>(
+                  value: 3,
+                  child: Text("Change to default"),
+                ),
+              ];
+            },
+            onSelected: (value) {
+              if (value == 0) {
+                increaseFontSize();
+              } else if (value == 1) {
+                decreaseFontSize();
+              } else if (value == 2) {
+                changeBackgroundColor();
+              } else if (value == 3) {
+                changeToDefault();
+              }
+            },
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -23,11 +93,23 @@ class MovieDetailScreen extends StatelessWidget {
             Container(
               margin: EdgeInsets.all(16.0),
               alignment: Alignment.center, // Center the image
-              child: Image.network(
-                'https://image.tmdb.org/t/p/w500${movie.posterPath}',
-                height: 400,
-                width: 250,
-                fit: BoxFit.cover,
+              child: GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ImageViewScreen(
+                          imageUrl:
+                              'https://image.tmdb.org/t/p/w500${widget.movie.posterPath}'),
+                    ),
+                  );
+                },
+                child: Image.network(
+                  'https://image.tmdb.org/t/p/w500${widget.movie.posterPath}',
+                  height: 400,
+                  width: 250,
+                  fit: BoxFit.cover,
+                ),
               ),
             ),
             Padding(
@@ -44,7 +126,7 @@ class MovieDetailScreen extends StatelessWidget {
                   ),
                   SizedBox(height: 8),
                   Text(
-                    movie.overview!,
+                    widget.movie.overview!,
                     style: TextStyle(fontSize: descFontSize),
                   ),
                   SizedBox(height: 16),
@@ -57,7 +139,7 @@ class MovieDetailScreen extends StatelessWidget {
                   ),
                   SizedBox(height: 8),
                   Text(
-                    movie.releaseDate!,
+                    widget.movie.releaseDate!,
                     style: TextStyle(fontSize: descFontSize),
                   ),
                   SizedBox(height: 16),
@@ -70,7 +152,9 @@ class MovieDetailScreen extends StatelessWidget {
                   ),
                   SizedBox(height: 8),
                   Text(
-                    movie.genres != null ? movie.genres!.join(", ") : '',
+                    widget.movie.genres != null
+                        ? widget.movie.genres!.join(", ")
+                        : '',
                     style: TextStyle(fontSize: descFontSize),
                   ),
                   SizedBox(height: 16),
@@ -83,15 +167,37 @@ class MovieDetailScreen extends StatelessWidget {
                   ),
                   SizedBox(height: 8),
                   Text(
-                    movie.voteAverage.toString() +
+                    widget.movie.voteAverage.toString() +
                         ' (' +
-                        movie.voteCount.toString() +
+                        widget.movie.voteCount.toString() +
                         ' user)',
                     style: TextStyle(fontSize: descFontSize),
                   ),
                 ],
               ),
             ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class ImageViewScreen extends StatelessWidget {
+  const ImageViewScreen({super.key, required this.imageUrl});
+  final String imageUrl;
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: SafeArea(
+        child: Stack(
+          children: [
+            Image.network(
+              imageUrl,
+              height: double.infinity,
+              width: double.infinity,
+            ),
+            const BackButton(),
           ],
         ),
       ),
