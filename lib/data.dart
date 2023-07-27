@@ -7,7 +7,6 @@ class Movie {
   double? voteAverage;
   int? voteCount;
   String? releaseDate;
-  List<String>? genres;
 
   Movie({
     this.id,
@@ -18,7 +17,6 @@ class Movie {
     this.voteAverage,
     this.voteCount,
     this.releaseDate,
-    this.genres,
   });
 
   Movie.fromJson(Map<String, dynamic> json) {
@@ -30,9 +28,6 @@ class Movie {
     voteAverage = json['vote_average']?.toDouble();
     voteCount = json['vote_count'] ?? 0;
     releaseDate = json['release_date'];
-    if (json['genres'] != null) {
-      genres = List<String>.from(json['genres'].map((x) => x['name']));
-    }
   }
 
   String getPosterUrl() {
