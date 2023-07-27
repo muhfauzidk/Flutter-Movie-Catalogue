@@ -17,7 +17,7 @@ class _HomeScreenState extends State<HomeScreen> {
   bool isLoading = false;
 
   final int pageSize = 20;
-  final int totalMovies = 100;
+  int totalMovies = 20;
 
   @override
   void initState() {
@@ -26,6 +26,8 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> fetchMovies() async {
+    Stopwatch stopwatch = Stopwatch()..start(); // Start the stopwatch
+
     setState(() {
       isLoading = true;
     });
@@ -71,6 +73,21 @@ class _HomeScreenState extends State<HomeScreen> {
       isLoading = false;
       movies = allMovies;
     });
+
+    stopwatch.stop(); // Stop the stopwatch
+    print(
+        'fetchMovies execution time: ${stopwatch.elapsed.inMilliseconds} milliseconds');
+
+    // // Update the theme based on the fetched data
+    // if (movies != null && movies!.isNotEmpty) {
+    //   if (movies!.length >= 1000) {
+    //     homeScreenBackgroundColor = Colors.blue;
+    //   } else if (movies!.length >= 10000) {
+    //     homeScreenBackgroundColor = Colors.red;
+    //   }
+    // } else {
+    //   homeScreenBackgroundColor = Colors.white; // Default theme
+    // }
   }
 
   double titleFontSize = 20.0;
@@ -79,6 +96,12 @@ class _HomeScreenState extends State<HomeScreen> {
   void increaseTitleFontSize() {
     setState(() {
       titleFontSize += 5;
+    });
+  }
+
+  void decreaseFontSize() {
+    setState(() {
+      titleFontSize -= 5;
     });
   }
 
@@ -93,6 +116,13 @@ class _HomeScreenState extends State<HomeScreen> {
       titleFontSize = 20.0;
       homeScreenBackgroundColor = Colors.white;
     });
+  }
+
+  void changeTotalMovies(int total) {
+    setState(() {
+      totalMovies = total;
+    });
+    fetchMovies();
   }
 
   String searchQuery = '';
@@ -140,7 +170,11 @@ class _HomeScreenState extends State<HomeScreen> {
               return [
                 const PopupMenuItem<int>(
                   value: 0,
-                  child: Text("Increase title font size"),
+                  child: Text("Increase font size"),
+                ),
+                const PopupMenuItem<int>(
+                  value: 1,
+                  child: Text("Decrease font size"),
                 ),
                 const PopupMenuItem<int>(
                   value: 2,
@@ -150,15 +184,70 @@ class _HomeScreenState extends State<HomeScreen> {
                   value: 3,
                   child: Text("Change to default"),
                 ),
+                const PopupMenuItem<int>(
+                  value: 4,
+                  child: Text("Total data"),
+                ),
               ];
             },
             onSelected: (value) {
               if (value == 0) {
                 increaseTitleFontSize();
+              } else if (value == 1) {
+                decreaseFontSize();
               } else if (value == 2) {
                 changeBackgroundColor();
               } else if (value == 3) {
                 changeToDefault();
+              } else if (value == 4) {
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                      title: Text('Select Total Movies'),
+                      content: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          ElevatedButton(
+                            onPressed: () {
+                              changeTotalMovies(100);
+                              Navigator.of(context).pop();
+                            },
+                            child: Text('100 Movies'),
+                          ),
+                          ElevatedButton(
+                            onPressed: () {
+                              changeTotalMovies(500);
+                              Navigator.of(context).pop();
+                            },
+                            child: Text('500 Movies'),
+                          ),
+                          ElevatedButton(
+                            onPressed: () {
+                              changeTotalMovies(1000);
+                              Navigator.of(context).pop();
+                            },
+                            child: Text('1.000 Movies'),
+                          ),
+                          ElevatedButton(
+                            onPressed: () {
+                              changeTotalMovies(5000);
+                              Navigator.of(context).pop();
+                            },
+                            child: Text('5.000 Movies'),
+                          ),
+                          ElevatedButton(
+                            onPressed: () {
+                              changeTotalMovies(10000);
+                              Navigator.of(context).pop();
+                            },
+                            child: Text('10.000 Movies'),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                );
               }
             },
           ),
@@ -182,12 +271,19 @@ class _HomeScreenState extends State<HomeScreen> {
                     final movie = getFilteredMovies()[index];
                     return GestureDetector(
                       onTap: () {
+                        Stopwatch stopwatch = Stopwatch()
+                          ..start(); // Start the stopwatch
+
                         Navigator.of(context).push(
                           MaterialPageRoute(
                             builder: (context) =>
                                 MovieDetailScreen(movie: movie),
                           ),
                         );
+
+                        stopwatch.stop(); // Stop the stopwatch
+                        print(
+                            'onTap execution time: ${stopwatch.elapsed.inMilliseconds} milliseconds');
                       },
                       child: Container(
                         padding: const EdgeInsets.all(12.0),
