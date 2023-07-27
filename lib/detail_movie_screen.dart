@@ -5,21 +5,17 @@ import 'data.dart';
 class MovieDetailScreen extends StatefulWidget {
   final Movie movie;
 
-  const MovieDetailScreen({required this.movie});
+  const MovieDetailScreen({Key? key, required this.movie}) : super(key: key);
 
   @override
   _MovieDetailScreenState createState() => _MovieDetailScreenState();
 }
 
 class _MovieDetailScreenState extends State<MovieDetailScreen> {
-  double titleFontSize = 20.0;
-  double descFontSize = 16.0;
-  Color detailScreenBackgroundColor = Colors.white;
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: detailScreenBackgroundColor,
+      backgroundColor: Colors.white,
       appBar: AppBar(
         title: Text(widget.movie.title!),
       ),
@@ -32,9 +28,6 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
               alignment: Alignment.center, // Center the image
               child: GestureDetector(
                 onTap: () {
-                  Stopwatch stopwatch = Stopwatch()
-                    ..start(); // Start the stopwatch
-
                   Navigator.push(
                     context,
                     MaterialPageRoute(
@@ -44,10 +37,6 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
                       ),
                     ),
                   );
-
-                  stopwatch.stop(); // Stop the stopwatch
-                  print(
-                      'onTap execution time: ${stopwatch.elapsed.inMilliseconds} milliseconds');
                 },
                 child: Image.network(
                   'https://image.tmdb.org/t/p/w500${widget.movie.posterPath}',
@@ -62,43 +51,43 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
+                  const Text(
                     'Overview',
                     style: TextStyle(
-                      fontSize: titleFontSize,
+                      fontSize: 20.0,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                   const SizedBox(height: 8),
                   Text(
                     widget.movie.overview!,
-                    style: TextStyle(fontSize: descFontSize),
+                    style: const TextStyle(fontSize: 16.0),
                   ),
                   const SizedBox(height: 16),
-                  Text(
+                  const Text(
                     'Release Date',
                     style: TextStyle(
-                      fontSize: titleFontSize,
+                      fontSize: 20.0,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                   const SizedBox(height: 8),
                   Text(
                     widget.movie.releaseDate!,
-                    style: TextStyle(fontSize: descFontSize),
+                    style: const TextStyle(fontSize: 16.0),
                   ),
                   const SizedBox(height: 16),
-                  Text(
+                  const Text(
                     'Vote Average',
                     style: TextStyle(
-                      fontSize: titleFontSize,
+                      fontSize: 20.0,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                   const SizedBox(height: 8),
                   Text(
                     '${widget.movie.voteAverage} (${widget.movie.voteCount} user)',
-                    style: TextStyle(fontSize: descFontSize),
+                    style: const TextStyle(fontSize: 16.0),
                   ),
                 ],
               ),
