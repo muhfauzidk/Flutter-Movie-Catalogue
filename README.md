@@ -1,6 +1,6 @@
 # Flutter Movie Catalogue
 
-A Flutter app build without pattern for browsing popular movies using TMDB API
+A Flutter app for browsing popular movies using TMDB API.
 
 ## Screenshots
 
