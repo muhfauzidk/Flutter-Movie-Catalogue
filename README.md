@@ -1,16 +1,8 @@
-# movie_catalogue
+# Flutter Movie Catalogue
 
-A new Flutter project.
+A Flutter app build without pattern for browsing popular movies.
 
-## Getting Started
+## Screenshots
 
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+![moviecatalogue_home](https://github.com/muhfauzidk/Flutter-Movie-Catalogue/assets/86062100/5ee2c247-1205-4bbe-aa33-812c40b2704f)
+![moviecatalogue_detail](https://github.com/muhfauzidk/Flutter-Movie-Catalogue/assets/86062100/6bd32a0b-82c3-4e38-ab09-b19e01a5d02c)
